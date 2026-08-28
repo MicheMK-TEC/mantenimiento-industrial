@@ -1,7 +1,6 @@
 import './globals.css'
-import type { Metadata } from 'metadata' // o importar estándar de react
 
-export const metadata: Metadata = {
+export const metadata = {
   title: 'Mantenimiento Industrial PRO',
   description: 'Plataforma web de gestión de mantenimiento e IoT',
 }
