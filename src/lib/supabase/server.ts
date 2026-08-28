@@ -1,4 +1,4 @@
- import { createServerClient } from '@supabase/ssr'
+import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
 export function createClient() {
@@ -12,12 +12,15 @@ export function createClient() {
         getAll() {
           return cookieStore.getAll()
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet: Array<{ name: string; value: string; options: any }>) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
               cookieStore.set(name, value, options)
             )
-          } catch {}
+          } catch {
+            // El método setAll se llamó desde un Server Component.
+            // Esto se puede ignorar si tienes middleware refrescando las sesiones.
+          }
         },
       },
     }
