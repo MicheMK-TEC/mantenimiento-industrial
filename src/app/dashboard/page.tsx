@@ -1,68 +1,36 @@
- 'use client'
-import { useState } from 'react'
-
-export default function OrdenesTrabajoPage() {
-  const [trabajoRealizado, setTrabajoRealizado] = useState('')
-  const [horasHombre, setHorasHombre] = useState('')
-  const [estado, setEstado] = useState('En Proceso')
-  const [guardado, setGuardado] = useState(false)
-
-  const handleGuardarTecnico = (e: React.FormEvent) => {
-    e.preventDefault()
-    setGuardado(true)
-  }
-
+ export default function DashboardPage() {
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold text-slate-900 mb-6">Órdenes de Trabajo - Ejecución del Técnico</h1>
+    <div className="max-w-7xl mx-auto space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Panel de Control y Confiabilidad</h1>
+          <p className="text-slate-400 text-sm">Gestión de Mantenimiento Basada en Estándares SMRP.</p>
+        </div>
+        <span className="bg-blue-950 border border-blue-800 text-blue-300 px-3 py-1 rounded text-xs font-mono">Modo: Administrador / Planner</span>
+      </div>
 
-      <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200 mb-6">
-        <h3 className="font-bold text-lg text-slate-800 mb-2">Solicitud #101: Falla en Compresora Principal</h3>
-        <p className="text-slate-600 text-sm mb-4">Reportado por: Operaciones | Estado actual: <span className="text-amber-600 font-semibold">{estado}</span></p>
-
-        <form onSubmit={handleGuardarTecnico} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Informe Técnico / Acciones Realizadas:</label>
-            <textarea 
-              value={trabajoRealizado} 
-              onChange={(e) => setTrabajoRealizado(e.target.value)}
-              placeholder="Describa el diagnóstico, cambio de piezas o soldadura realizada..."
-              className="w-full p-2 border border-slate-300 rounded-md h-28"
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Horas Invertidas (HH):</label>
-              <input 
-                type="number" 
-                value={horasHombre} 
-                onChange={(e) => setHorasHombre(e.target.value)}
-                placeholder="Ej. 2.5"
-                className="w-full p-2 border border-slate-300 rounded-md"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Cambiar Estado de la OT:</label>
-              <select 
-                value={estado} 
-                onChange={(e) => setEstado(e.target.value)}
-                className="w-full p-2 border border-slate-300 rounded-md"
-              >
-                <option value="En Proceso">En Proceso</option>
-                <option value="Esperando Repuestos">Esperando Repuestos</option>
-                <option value="Finalizada">Finalizada</option>
-              </select>
-            </div>
-          </div>
-
-          <button type="submit" className="bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700 font-medium">
-            Guardar Avance Técnico
-          </button>
-
-          {guardado && <p className="text-green-600 font-medium mt-2">¡Información del técnico registrada y actualizada correctamente!</p>}
-        </form>
+      {/* Tarjetas de Analítica SMRP */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-slate-800 border border-slate-700 p-5 rounded-xl shadow-lg">
+          <p className="text-xs uppercase tracking-wider text-slate-400 font-semibold">Solicitudes Nuevas</p>
+          <p className="text-3xl font-black text-amber-400 mt-2">3</p>
+          <span className="text-xs text-slate-400 mt-1 block">Pendientes de evaluación</span>
+        </div>
+        <div className="bg-slate-800 border border-slate-700 p-5 rounded-xl shadow-lg">
+          <p className="text-xs uppercase tracking-wider text-slate-400 font-semibold">OTs en Ejecución</p>
+          <p className="text-3xl font-black text-blue-400 mt-2">5</p>
+          <span className="text-xs text-slate-400 mt-1 block">Asignadas a técnicos</span>
+        </div>
+        <div className="bg-slate-800 border border-slate-700 p-5 rounded-xl shadow-lg">
+          <p className="text-xs uppercase tracking-wider text-slate-400 font-semibold">Disponibilidad (A)</p>
+          <p className="text-3xl font-black text-emerald-400 mt-2">94.2%</p>
+          <span className="text-xs text-emerald-500 mt-1 block">↑ Meta &gt; 92%</span>
+        </div>
+        <div className="bg-slate-800 border border-slate-700 p-5 rounded-xl shadow-lg">
+          <p className="text-xs uppercase tracking-wider text-slate-400 font-semibold">Confiabilidad MTBF</p>
+          <p className="text-3xl font-black text-indigo-400 mt-2">320 hrs</p>
+          <span className="text-xs text-slate-400 mt-1 block">Promedio planta</span>
+        </div>
       </div>
     </div>
   )
