@@ -32,7 +32,7 @@ export default function Sidebar() {
         <h1 className="font-bold text-white text-lg tracking-wide">MANTENIMIENTO <span className="text-blue-500">PRO</span></h1>
         <p className="text-xs text-slate-400 mt-0.5">Industrial IoT & Core</p>
       </div>
-      
+
       <nav className="flex-1 px-4 py-6 space-y-1.5">
         {menuItems.map((item) => {
           const Icon = item.icon
