@@ -1,194 +1,228 @@
  'use client'
 import { useState } from 'react'
 
-export default function OrdenesTrabajoPage() {
-  // Simulación de una OTM registrada que llega del solicitante
-  const [otm] = useState({
-    code: 'OTM-2026-001',
-    asset: 'TF01 - Línea de Termoformado 01',
-    description: 'Fuga de aceite en cilindro hidráulico principal.',
-    status: 'Registrado'
-  })
-
-  // Estados de Planificación
-  const [plannedHH, setPlannedHH] = useState('4.0')
-  const [scheduledDate, setScheduledDate] = useState('2026-03-05')
-  const [technician, setTechnician] = useState('Juan Pérez')
-  const [currentStatus, setCurrentStatus] = useState('Registrado')
-
-  // Estados de Cierre Técnico
-  const [failureCause, setFailureCause] = useState('')
-  const [startTime, setStartTime] = useState('')
-  const [endTime, setEndTime] = useState('')
-  const [repuestos, setRepuestos] = useState([{ name: 'Sello O-Ring 20mm', qty: 2 }])
-  const [nuevoRepuesto, setNuevoRepuesto] = useState('')
-  const [nuevaCantidad, setNuevaCantidad] = useState(1)
-  const [guardadoExitoso, setGuardadoExitoso] = useState(false)
-
-  const agregarRepuesto = () => {
-    if (nuevoRepuesto.trim()) {
-      setRepuestos([...repuestos, { name: nuevoRepuesto, qty: nuevaCantidad }])
-      setNuevoRepuesto('')
-      setNuevaCantidad(1)
+export default function SolicitudesMasterPage() {
+  // Estado con datos de ejemplo idénticos a tu formato industrial
+  const [registros, setRegistros] = useState([
+    {
+      id: 1,
+      fechaSolicitud: '02/03/2026 16:00:00',
+      st: 'ST-0001',
+      maquina: 'TMF-01',
+      descripcionProblema: 'Apoyo en la tmf.1 (necesitamos evaluar una guarda a los piñones (contaminación) tardes sujetar o reubicar este sensor en la ext3 para evitar q se pegue material al momento del cambio de malla',
+      usuario: 'H.F',
+      tecnicoAsignar: 'ELECTRICO',
+      ot: 'OTM -0001',
+      tipoMant: 'Correctivo E.',
+      estado: 'En proceso',
+      estacionAfectada: '',
+      repuestos: '',
+      causa: '',
+      descripcionTecnico: '',
+      fechaFin: '02/03/2026 16:00:00'
+    },
+    {
+      id: 2,
+      fechaSolicitud: '03/03/2026 16:00:00',
+      st: 'ST-0002',
+      maquina: 'EXT - 02',
+      descripcionProblema: 'De nuevo se a bajado la temperatura de la zana 10',
+      usuario: 'JZ',
+      tecnicoAsignar: 'MECANICO',
+      ot: 'OTM -0002',
+      tipoMant: 'Preventivo',
+      estado: 'PROGRAMADO',
+      estacionAfectada: '',
+      repuestos: '',
+      causa: '',
+      descripcionTecnico: '',
+      fechaFin: '30/12/1899 15:00:00'
+    },
+    {
+      id: 3,
+      fechaSolicitud: '04/03/2026 16:00:00',
+      st: 'ST-0003',
+      maquina: 'EXT - 02',
+      descripcionProblema: 'EL INTERRUPTOR se baja quiero subirla sale chispa y no suve',
+      usuario: 'OP',
+      tecnicoAsignar: 'ELECTRICO',
+      ot: 'OTM -0003',
+      tipoMant: 'Correctivo P',
+      estado: 'En proceso',
+      estacionAfectada: '',
+      repuestos: '',
+      causa: '',
+      descripcionTecnico: '',
+      fechaFin: '30/12/1899 18:00:00'
+    },
+    {
+      id: 4,
+      fechaSolicitud: '06/03/2026 16:00:00',
+      st: 'ST-0005',
+      maquina: 'TOL - 01',
+      descripcionProblema: 'se necesita q el secafor esre habilitado ni seca el material',
+      usuario: 'JZ',
+      tecnicoAsignar: 'MECANICO',
+      ot: 'OTM -0005',
+      tipoMant: 'Inspección L. L',
+      estado: 'Registrado',
+      estacionAfectada: '',
+      repuestos: '',
+      causa: '',
+      descripcionTecnico: '',
+      fechaFin: '30/12/1899 14:00:00'
     }
-  }
+  ])
 
-  const handleGuardarOT = (e: React.FormEvent) => {
+  // Modal para nueva solicitud del usuario
+  const [modalAbierto, setModalAbierto] = useState(false)
+  const [nuevaMaquina, setNuevaMaquina] = useState('TMF-01')
+  const [nuevaDesc, setNuevaDesc] = useState('')
+  const [nuevoUsuario, setNuevoUsuario] = useState('H.F')
+
+  const handleCrear = (e: React.FormEvent) => {
     e.preventDefault()
-    setCurrentStatus('Terminado')
-    setGuardadoExitoso(true)
+    const nuevoRegistro = {
+      id: registros.length + 1,
+      fechaSolicitud: new Date().toLocaleString(),
+      st: `ST-000${registros.length + 1}`,
+      maquina: nuevaMaquina,
+      descripcionProblema: nuevaDesc,
+      usuario: nuevoUsuario,
+      tecnicoAsignar: 'PENDIENTE',
+      ot: `OTM -000${registros.length + 1}`,
+      tipoMant: 'Correctivo',
+      estado: 'Registrado',
+      estacionAfectada: '',
+      repuestos: '',
+      causa: '',
+      descripcionTecnico: '',
+      fechaFin: '-'
+    }
+    setRegistros([nuevoRegistro, ...registros])
+    setModalAbierto(false)
+    setNuevaDesc('')
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
-      {/* Cabecera de la OTM */}
-      <div className="bg-slate-800 border border-slate-700 p-6 rounded-xl shadow-xl">
-        <div className="flex justify-between items-start border-b border-slate-700 pb-4 mb-4">
-          <div>
-            <span className={`text-xs font-bold uppercase px-3 py-1 rounded border ${
-              currentStatus === 'Registrado' ? 'bg-amber-950 text-amber-300 border-amber-800' :
-              currentStatus === 'En Proceso' ? 'bg-blue-950 text-blue-300 border-blue-800' :
-              'bg-emerald-950 text-emerald-300 border-emerald-800'
-            }`}>
-              Estado: {currentStatus}
-            </span>
-            <h1 className="text-2xl font-black text-white mt-2">{otm.code}: {otm.asset}</h1>
-            <p className="text-slate-300 text-sm mt-1"><strong className="text-slate-400">Problema reportado:</strong> {otm.description}</p>
-          </div>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center bg-slate-800 p-4 rounded-xl border border-slate-700 shadow-md">
+        <div>
+          <h1 className="text-xl font-bold text-white">Matriz General de Solicitudes y Órdenes de Mantenimiento</h1>
+          <p className="text-xs text-slate-400">Visualización centralizada por zonas: Solicitante (Amarillo), Coordinador (Azul) y Técnico (Verde).</p>
         </div>
+        <button 
+          onClick={() => setModalAbierto(true)}
+          className="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-4 py-2 rounded-lg text-sm transition shadow"
+        >
+          + Nueva Solicitud (Usuario)
+        </button>
+      </div>
 
-        <form onSubmit={handleGuardarOT} className="space-y-6">
-          {/* SECCIÓN 1: PLANIFICACIÓN (Rol Planificador) */}
-          <div className="bg-slate-900 p-4 rounded-lg border border-slate-700 space-y-4">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-blue-400">1. Bloque de Planificación y Asignación</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Tabla Maestra con Scroll Horizontal exacto al formato industrial */}
+      <div className="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-x-auto">
+        <table className="w-full text-left border-collapse text-xs whitespace-nowrap">
+          <thead>
+            {/* Cabecera superior por bloques temáticos */}
+            <tr className="border-b border-slate-700 text-center font-bold">
+              <th colSpan={5} className="bg-amber-100 text-amber-950 py-2.5 px-3 border-r border-amber-300">
+                SOLICITUDES (Llenado por el usuario)
+              </th>
+              <th colSpan={4} className="bg-blue-900 text-white py-2.5 px-3 border-r border-blue-700">
+                Actualizar por el Coordinador
+              </th>
+              <th colSpan={5} className="bg-emerald-900 text-white py-2.5 px-3">
+                Ingresar información por el Técnico
+              </th>
+            </tr>
+            {/* Cabecera de Columnas Individuales */}
+            <tr className="bg-slate-950 text-slate-300 border-b border-slate-700 text-[11px]">
+              <th className="p-2.5 border-r border-slate-800">Fecha de Solicitud y Hora</th>
+              <th className="p-2.5 border-r border-slate-800">Nº S.T</th>
+              <th className="p-2.5 border-r border-slate-800">MAQUINA / EQUIPO</th>
+              <th className="p-2.5 border-r border-slate-800 max-w-xs">DESCRIPCIÓN DEL PROBLEMA</th>
+              <th className="p-2.5 border-r border-slate-700">Usuario</th>
+
+              <th className="p-2.5 border-r border-blue-950 bg-blue-950/50">TÉCNICO a ASIGNAR</th>
+              <th className="p-2.5 border-r border-blue-950 bg-blue-950/50">N.º OT</th>
+              <th className="p-2.5 border-r border-blue-950 bg-blue-950/50">TIPO DE MANT</th>
+              <th className="p-2.5 border-r border-slate-700 bg-blue-950/50">Estado</th>
+
+              <th className="p-2.5 border-r border-emerald-950 bg-emerald-950/50">ESTACIÓN AFECTADA</th>
+              <th className="p-2.5 border-r border-emerald-950 bg-emerald-950/50">REPUESTOS UTILIZADOS</th>
+              <th className="p-2.5 border-r border-emerald-950 bg-emerald-950/50">CAUSA</th>
+              <th className="p-2.5 border-r border-emerald-950 bg-emerald-950/50">DESCRIPCIÓN</th>
+              <th className="p-2.5 bg-emerald-950/50">Fecha y Hora Finalizada</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-800 text-slate-200">
+            {registros.map((item) => (
+              <tr key={item.id} className="hover:bg-slate-800/60 transition">
+                {/* ZONA AMARILLA (Datos Usuario) */}
+                <td className="p-2.5 border-r border-slate-800 font-mono text-slate-300">{item.fechaSolicitud}</td>
+                <td className="p-2.5 border-r border-slate-800 font-bold text-amber-400">{item.st}</td>
+                <td className="p-2.5 border-r border-slate-800 font-semibold text-white">{item.maquina}</td>
+                <td className="p-2.5 border-r border-slate-800 max-w-xs truncate text-slate-300" title={item.descripcionProblema}>
+                  {item.descripcionProblema}
+                </td>
+                <td className="p-2.5 border-r border-slate-700 font-bold text-center text-amber-300">{item.usuario}</td>
+
+                {/* ZONA AZUL (Datos Coordinador / Planificador) */}
+                <td className="p-2.5 border-r border-blue-950/50 bg-blue-950/20 text-blue-300 font-medium">{item.tecnicoAsignar}</td>
+                <td className="p-2.5 border-r border-blue-950/50 bg-blue-950/20 font-bold text-white">{item.ot}</td>
+                <td className="p-2.5 border-r border-blue-950/50 bg-blue-950/20 text-slate-300">{item.tipoMant}</td>
+                <td className="p-2.5 border-r border-slate-700 bg-blue-950/20">
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                    item.estado === 'Registrado' ? 'text-amber-400 italic bg-amber-950/40 border border-amber-800' :
+                    item.estado === 'PROGRAMADO' ? 'text-blue-300 bg-blue-900/40 border border-blue-700' :
+                    'text-emerald-300 bg-emerald-950/40 border border-emerald-800'
+                  }`}>
+                    {item.estado}
+                  </span>
+                </td>
+
+                {/* ZONA VERDE (Datos Técnico) */}
+                <td className="p-2.5 border-r border-emerald-950/50 bg-emerald-950/10 text-slate-400">{item.estacionAfectada || '-'}</td>
+                <td className="p-2.5 border-r border-emerald-950/50 bg-emerald-950/10 text-slate-400">{item.repuestos || '-'}</td>
+                <td className="p-2.5 border-r border-emerald-950/50 bg-emerald-950/10 text-slate-400">{item.causa || '-'}</td>
+                <td className="p-2.5 border-r border-emerald-950/50 bg-emerald-950/10 text-slate-400">{item.descripcionTecnico || '-'}</td>
+                <td className="p-2.5 bg-emerald-950/10 font-mono text-slate-300">{item.fechaFin}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Modal para registrar nueva solicitud */}
+      {modalAbierto && (
+        <div className="fixed inset-0 bg-black/70 flex justify-center items-center p-4 z-50">
+          <div className="bg-slate-800 border border-slate-700 p-6 rounded-xl max-w-md w-full space-y-4 shadow-2xl">
+            <h2 className="text-lg font-bold text-white">Registrar Nueva Solicitud (Usuario)</h2>
+            <form onSubmit={handleCrear} className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Horas Hombre (HH Programadas):</label>
-                <input 
-                  type="number" 
-                  step="0.5" 
-                  value={plannedHH} 
-                  onChange={(e) => setPlannedHH(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 p-2 rounded text-white text-sm"
-                  required 
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Fecha Programada:</label>
-                <input 
-                  type="date" 
-                  value={scheduledDate} 
-                  onChange={(e) => setScheduledDate(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 p-2 rounded text-white text-sm"
-                  required 
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Técnico Encargado:</label>
-                <select 
-                  value={technician} 
-                  onChange={(e) => setTechnician(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 p-2 rounded text-white text-sm"
-                  required
-                >
-                  <option value="Juan Pérez">Juan Pérez (Mecánica)</option>
-                  <option value="Carlos Ruiz">Carlos Ruiz (Automatización)</option>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Máquina / Equipo:</label>
+                <select value={nuevaMaquina} onChange={(e) => setNuevaMaquina(e.target.value)} className="w-full bg-slate-900 border border-slate-700 p-2 rounded text-white text-xs">
+                  <option value="TMF-01">TMF-01</option>
+                  <option value="EXT - 02">EXT - 02</option>
+                  <option value="TOL - 01">TOL - 01</option>
                 </select>
               </div>
-            </div>
-          </div>
-
-          {/* SECCIÓN 2: CIERRE TÉCNICO (Rol Técnico - MTTR) */}
-          <div className="bg-slate-900 p-4 rounded-lg border border-slate-700 space-y-4">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-emerald-400">2. Formulario de Cierre e Informe Técnico</h2>
-            
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Causa Raíz de la Falla / Diagnóstico:</label>
-              <textarea 
-                value={failureCause} 
-                onChange={(e) => setFailureCause(e.target.value)}
-                placeholder="Desgaste prematuro de junta tórica por sobrepresión..."
-                className="w-full bg-slate-800 border border-slate-700 p-2.5 rounded text-white text-sm h-24"
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Fecha y Hora de Inicio (Técnico):</label>
-                <input 
-                  type="datetime-local" 
-                  value={startTime} 
-                  onChange={(e) => setStartTime(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 p-2 rounded text-white text-sm"
-                  required 
-                />
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Descripción del Problema:</label>
+                <textarea value={nuevaDesc} onChange={(e) => setNuevaDesc(e.target.value)} placeholder="Describa la falla..." className="w-full bg-slate-900 border border-slate-700 p-2 rounded text-white text-xs h-24" required />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Fecha y Hora de Fin (Técnico):</label>
-                <input 
-                  type="datetime-local" 
-                  value={endTime} 
-                  onChange={(e) => setEndTime(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 p-2 rounded text-white text-sm"
-                  required 
-                />
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Iniciales del Usuario:</label>
+                <input type="text" value={nuevoUsuario} onChange={(e) => setNuevoUsuario(e.target.value)} className="w-full bg-slate-900 border border-slate-700 p-2 rounded text-white text-xs uppercase" maxLength={3} required />
               </div>
-            </div>
-
-            {/* Gestión de Repuestos */}
-            <div className="pt-2">
-              <label className="block text-xs font-semibold text-slate-300 mb-2">Repuestos y Materiales Utilizados:</label>
-              <ul className="space-y-1 mb-3">
-                {repuestos.map((item, index) => (
-                  <li key={index} className="text-xs bg-slate-800 p-2 rounded flex justify-between items-center border border-slate-700">
-                    <span className="text-slate-200">{item.name}</span>
-                    <span className="bg-blue-900 text-blue-200 px-2 py-0.5 rounded font-mono">Cant: {item.qty}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="flex gap-2">
-                <input 
-                  type="text" 
-                  placeholder="Nombre del repuesto..." 
-                  value={nuevoRepuesto} 
-                  onChange={(e) => setNuevoRepuesto(e.target.value)}
-                  className="flex-1 bg-slate-800 border border-slate-700 p-2 rounded text-white text-sm"
-                />
-                <input 
-                  type="number" 
-                  min="1" 
-                  value={nuevaCantidad} 
-                  onChange={(e) => setNuevaCantidad(Number(e.target.value))}
-                  className="w-20 bg-slate-800 border border-slate-700 p-2 rounded text-white text-sm"
-                />
-                <button 
-                  type="button" 
-                  onClick={agregarRepuesto} 
-                  className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded text-sm font-medium transition"
-                >
-                  Agregar
-                </button>
+              <div className="flex gap-2 pt-2">
+                <button type="submit" className="flex-1 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold py-2 rounded text-xs transition">Guardar Solicitud</button>
+                <button type="button" onClick={() => setModalAbierto(false)} className="bg-slate-700 hover:bg-slate-600 text-white py-2 px-4 rounded text-xs transition">Cancelar</button>
               </div>
-            </div>
+            </form>
           </div>
-
-          <button 
-            type="submit" 
-            className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-lg shadow-lg transition"
-          >
-            Guardar y Registrar Cierre Definitivo de OTM
-          </button>
-
-          {guardadoExitoso && (
-            <div className="p-4 bg-emerald-950 border border-emerald-800 text-emerald-300 rounded-lg text-sm text-center">
-              ¡Orden de Trabajo cerrada exitosamente! Los datos han sido integrados al motor analítico para el cálculo automático de MTTR y Disponibilidad.
-            </div>
-          )}
-        </form>
-      </div>
+        </div>
+      )}
     </div>
   )
 }
-
