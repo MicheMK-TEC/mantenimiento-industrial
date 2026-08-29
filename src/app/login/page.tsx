@@ -90,7 +90,7 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChange={function (e) { setPassword(e.target.value) }}
-              placeholder="1234"
+              placeholder="dot dot dot dot"
               className="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-white text-xs outline-none"
             />
           </div>
