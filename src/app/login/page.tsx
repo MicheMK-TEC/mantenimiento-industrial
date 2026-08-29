@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-const CORREO_ADMIN = 'migae@gmail.com'
+const CORREO_ADMIN = 'migaelschneider@gmail.com'
 
 export default function LoginPage() {
   const router = useRouter()
