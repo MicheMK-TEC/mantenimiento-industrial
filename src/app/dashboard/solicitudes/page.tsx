@@ -126,4 +126,75 @@ export default function SolicitudesMantenimientoPage() {
                 value={nuevaSolicitud.prioridad}
                 onChange={e => setNuevaSolicitud({...nuevaSolicitud, prioridad: e.target.value})}
                 className="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-xs text-white outline-none"
-                
+              >
+                <option value="Baja">Baja</option>
+                <option value="Media">Media</option>
+                <option value="Alta">Alta</option>
+                <option value="Critica">Critica</option>
+              </select>
+            </div>
+            <div className="flex items-end">
+              <button
+                type="submit"
+                className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold p-3 rounded-xl text-xs transition cursor-pointer"
+              >
+                + Crear Solicitud
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl space-y-4">
+          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-300">Ordenes Registradas</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="border-b border-slate-800 text-slate-400">
+                  <th className="p-3">Fecha</th>
+                  <th className="p-3">Equipo</th>
+                  <th className="p-3">Descripcion</th>
+                  <th className="p-3">Prioridad</th>
+                  <th className="p-3">Estado</th>
+                  <th className="p-3 text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800/60">
+                {solicitudes.map((s) => (
+                  <tr key={s.id} className="hover:bg-slate-800/40 transition">
+                    <td className="p-3 text-slate-400">{s.fecha}</td>
+                    <td className="p-3 font-semibold text-white">{s.equipo}</td>
+                    <td className="p-3 text-slate-300">{s.descripcion}</td>
+                    <td className="p-3">
+                      <span className="px-2 py-1 rounded-lg text-[10px] font-bold bg-amber-500/20 text-amber-400">
+                        {s.prioridad}
+                      </span>
+                    </td>
+                    <td className="p-3">
+                      <span className="px-2 py-1 rounded-lg text-[10px] font-bold bg-blue-500/20 text-blue-400">
+                        {s.estado}
+                      </span>
+                    </td>
+                    <td className="p-3 text-center space-x-2">
+                      <button
+                        onClick={() => cambiarEstado(s.id, 'En Proceso')}
+                        className="bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white px-2 py-1 rounded text-[10px] transition cursor-pointer"
+                      >
+                        En Proceso
+                      </button>
+                      <button
+                        onClick={() => cambiarEstado(s.id, 'Completado')}
+                        className="bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white px-2 py-1 rounded text-[10px] transition cursor-pointer"
+                      >
+                        Completar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
