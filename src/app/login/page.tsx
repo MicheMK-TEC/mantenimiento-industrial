@@ -10,14 +10,14 @@ export default function LoginPage() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
     
-    // Tu acceso directo como Administrador principal
+    // Tu acceso directo como Administrador principal con tu correo de Vercel
     if (correo.trim().toLowerCase() === 'migaelsc@gmail.com') {
       localStorage.setItem('usuario_activo', JSON.stringify({ correo, rol: 'admin' }))
       router.push('/dashboard/solicitudes')
       return
     }
 
-    // Acceso para los usuarios creados en la plataforma
+    // Validación para los gestores y técnicos creados desde administración
     const guardados = JSON.parse(localStorage.getItem('lista_usuarios_planta') || '[]')
     const usuarioEncontrado = guardados.find((u: any) => u.correo.toLowerCase() === correo.trim().toLowerCase() && u.password === password)
 
@@ -25,7 +25,7 @@ export default function LoginPage() {
       localStorage.setItem('usuario_activo', JSON.stringify(usuarioEncontrado || { correo, rol: 'tecnico' }))
       router.push('/dashboard/solicitudes')
     } else {
-      alert('Correo o contraseña incorrectos.')
+      alert('Correo o contraseña incorrectos. Verifique con el Administrador.')
     }
   }
 
@@ -45,7 +45,7 @@ export default function LoginPage() {
               value={correo} 
               onChange={(e) => setCorreo(e.target.value)}
               placeholder="tu-correo@empresa.com" 
-              className="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-white text-xs outline-none" 
+              className="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-white text-xs outline-none focus:border-amber-500" 
               required 
             />
           </div>
@@ -57,7 +57,7 @@ export default function LoginPage() {
               value={password} 
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••" 
-              className="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-white text-xs outline-none" 
+              className="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-white text-xs outline-none focus:border-amber-500" 
               required
             />
           </div>
