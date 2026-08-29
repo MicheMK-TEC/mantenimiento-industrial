@@ -1,62 +1,38 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-
-const CORREO_ADMIN = 'migaelschneider@gmail.com'
-
-const USUARIOS_BASE = [
-  { id: 'JUANPC', rol: 'usuario' },
-  { id: 'ROMEROPS', rol: 'usuario' },
-  { id: 'MESSIPS', rol: 'usuario' },
-  { id: 'PORDEP', rol: 'usuario' },
-  { id: 'ANDREFG', rol: 'gestor' },
-  { id: 'MERVINPO', rol: 'gestor' },
-  { id: 'DAYANAPE', rol: 'gestor' },
-  { id: 'JOSEVP', rol: 'tecnico' },
-  { id: 'JORGEPR', rol: 'tecnico' },
-  { id: 'IRVNGED', rol: 'tecnico' },
-  { id: 'KAISERQW', rol: 'tecnico' },
-]
+import { createClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
   const router = useRouter()
-  const [usuario, setUsuario] = useState('')
+  const supabase = createClient()
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [cargando, setCargando] = useState(false)
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     setError('')
-    const valor = usuario.trim()
 
-    if (valor.length === 0) {
-      setError('Escriba su usuario o correo.')
+    if (!email.trim() || !password) {
+      setError('Ingrese correo y contraseña.')
       return
     }
 
-    if (valor.toLowerCase() === CORREO_ADMIN.toLowerCase()) {
-      localStorage.setItem('usuario_activo', JSON.stringify({ id: 'ADMIN', rol: 'admin' }))
-      window.location.href = '/dashboard'
-      return
-    }
-
-    let listaCompleta = JSON.parse(localStorage.getItem('lista_usuarios_planta') || 'null')
-    if (!listaCompleta) {
-      listaCompleta = USUARIOS_BASE.map(function (u) {
-        return { id: u.id, rol: u.rol, password: '123' }
-      })
-      localStorage.setItem('lista_usuarios_planta', JSON.stringify(listaCompleta))
-    }
-
-    const encontrado = listaCompleta.find(function (u: any) {
-      return u.id.toUpperCase() === valor.toUpperCase() && u.password === password
+    setCargando(true)
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
     })
+    setCargando(false)
 
-    if (encontrado) {
-      localStorage.setItem('usuario_activo', JSON.stringify(encontrado))
-      window.location.href = '/dashboard'
-    } else {
-      setError('Usuario o contraseña incorrectos.')
+    if (authError) {
+      setError(authError.message)
+      return
     }
+
+    router.push('/dashboard')
+    router.refresh()
   }
 
   return (
@@ -64,7 +40,7 @@ export default function LoginPage() {
       <div className="bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-2xl max-w-md w-full space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-xl font-bold text-white">MK CONSULTING - CMMS</h1>
-          <p className="text-xs text-slate-400">Ingrese su usuario o correo de administrador</p>
+          <p className="text-xs text-slate-400">Ingrese su correo y contraseña</p>
         </div>
 
         {error && (
@@ -75,13 +51,14 @@ export default function LoginPage() {
 
         <div className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">Usuario / Correo:</label>
+            <label className="block text-xs font-semibold text-slate-300 mb-1">Correo:</label>
             <input
-              type="text"
-              value={usuario}
-              onChange={function (e) { setUsuario(e.target.value) }}
-              placeholder="Ej. JOSEVP o tu correo"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="tucorreo@empresa.com"
               className="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-white text-xs outline-none"
+              onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
             />
           </div>
           <div>
@@ -89,17 +66,19 @@ export default function LoginPage() {
             <input
               type="password"
               value={password}
-              onChange={function (e) { setPassword(e.target.value) }}
-              placeholder="dot dot dot dot"
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
               className="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-white text-xs outline-none"
+              onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
             />
           </div>
           <button
             type="button"
             onClick={handleLogin}
-            className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-3 rounded-xl text-sm cursor-pointer"
+            disabled={cargando}
+            className="w-full bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-slate-950 font-bold py-3 rounded-xl text-sm cursor-pointer"
           >
-            Ingresar
+            {cargando ? 'Ingresando...' : 'Ingresar'}
           </button>
         </div>
       </div>
