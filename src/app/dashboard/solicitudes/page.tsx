@@ -84,8 +84,46 @@ export default function SolicitudesMantenimientoPage() {
               onClick={() => router.push('/dashboard/usuarios')}
               className="bg-slate-800 hover:bg-slate-700 text-xs px-4 py-2 rounded-xl border border-slate-700 transition cursor-pointer"
             >
-              👥 Gestionar Usuarios
+              Gestionar Usuarios
             </button>
             <button
               onClick={cerrarSesion}
-              className="bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs
+              className="bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs px-4 py-2 rounded-xl border border-red-500/30 transition cursor-pointer"
+            >
+              Cerrar Sesion
+            </button>
+          </div>
+        </div>
+
+        <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl space-y-4">
+          <h2 className="text-sm font-bold uppercase tracking-wider text-amber-400">Registrar Nueva Solicitud</h2>
+          <form onSubmit={handleCrearSolicitud} className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">Equipo / Activo:</label>
+              <input
+                type="text"
+                value={nuevaSolicitud.equipo}
+                onChange={e => setNuevaSolicitud({...nuevaSolicitud, equipo: e.target.value})}
+                placeholder="Ej. Bomba P-01"
+                className="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-xs text-white outline-none"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">Descripcion de la Falla:</label>
+              <input
+                type="text"
+                value={nuevaSolicitud.descripcion}
+                onChange={e => setNuevaSolicitud({...nuevaSolicitud, descripcion: e.target.value})}
+                placeholder="Detalle el problema..."
+                className="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-xs text-white outline-none"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">Prioridad:</label>
+              <select
+                value={nuevaSolicitud.prioridad}
+                onChange={e => setNuevaSolicitud({...nuevaSolicitud, prioridad: e.target.value})}
+                className="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-xs text-white outline-none"
+                
