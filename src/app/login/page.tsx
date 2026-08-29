@@ -24,30 +24,36 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleLogin = () => {
     setError('')
     const valor = usuario.trim()
 
+    if (valor.length === 0) {
+      setError('Escriba su usuario o correo.')
+      return
+    }
+
     if (valor.toLowerCase() === CORREO_ADMIN.toLowerCase()) {
       localStorage.setItem('usuario_activo', JSON.stringify({ id: 'ADMIN', rol: 'admin' }))
-      router.push('/dashboard')
+      window.location.href = '/dashboard'
       return
     }
 
     let listaCompleta = JSON.parse(localStorage.getItem('lista_usuarios_planta') || 'null')
     if (!listaCompleta) {
-      listaCompleta = USUARIOS_BASE.map(u => ({ ...u, password: '123' }))
+      listaCompleta = USUARIOS_BASE.map(function (u) {
+        return { id: u.id, rol: u.rol, password: '123' }
+      })
       localStorage.setItem('lista_usuarios_planta', JSON.stringify(listaCompleta))
     }
 
-    const encontrado = listaCompleta.find(
-      (u: any) => u.id.toUpperCase() === valor.toUpperCase() && u.password === password
-    )
+    const encontrado = listaCompleta.find(function (u: any) {
+      return u.id.toUpperCase() === valor.toUpperCase() && u.password === password
+    })
 
     if (encontrado) {
       localStorage.setItem('usuario_activo', JSON.stringify(encontrado))
-      router.push('/dashboard')
+      window.location.href = '/dashboard'
     } else {
       setError('Usuario o contraseña incorrectos.')
     }
@@ -60,21 +66,22 @@ export default function LoginPage() {
           <h1 className="text-xl font-bold text-white">MK CONSULTING - CMMS</h1>
           <p className="text-xs text-slate-400">Ingrese su usuario o correo de administrador</p>
         </div>
+
         {error && (
-          <div className="bg-red-950/60 border border-red-800 text-red-300 p-3 rounded-xl text-xs text-center font-medium">
+          <div className="bg-red-950 border border-red-800 text-red-300 p-3 rounded-xl text-xs text-center font-medium">
             {error}
           </div>
         )}
-        <form onSubmit={handleLogin} className="space-y-4">
+
+        <div className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1">Usuario / Correo:</label>
             <input
               type="text"
               value={usuario}
-              onChange={(e) => setUsuario(e.target.value)}
+              onChange={function (e) { setUsuario(e.target.value) }}
               placeholder="Ej. JOSEVP o tu correo"
-              className="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-white text-xs outline-none focus:border-amber-500"
-              required
+              className="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-white text-xs outline-none"
             />
           </div>
           <div>
@@ -82,18 +89,19 @@ export default function LoginPage() {
             <input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-white text-xs outline-none focus:border-amber-500"
+              onChange={function (e) { setPassword(e.target.value) }}
+              placeholder="dot dot dot dot"
+              className="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-white text-xs outline-none"
             />
           </div>
           <button
-            type="submit"
-            className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-3 rounded-xl text-sm transition cursor-pointer"
+            type="button"
+            onClick={handleLogin}
+            className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-3 rounded-xl text-sm cursor-pointer"
           >
             Ingresar
           </button>
-        </form>
+        </div>
       </div>
     </div>
   )
