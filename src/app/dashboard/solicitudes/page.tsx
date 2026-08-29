@@ -7,9 +7,7 @@ export default function SolicitudesMantenimientoPage() {
   const router = useRouter()
   const [rolActual, setRolActual] = useState('admin')
   const [usuarioActivo, setUsuarioActivo] = useState<any>(null)
-  
-  // Estados para las solicitudes de mantenimiento
-  const [solicitudes, setSolicit solicitudes] = useState<any[]>([])
+  const [solicitudes, setSolicitudes] = useState<any[]>([])
   const [nuevaSolicitud, setNuevaSolicitud] = useState({
     equipo: '',
     descripcion: '',
@@ -18,7 +16,6 @@ export default function SolicitudesMantenimientoPage() {
   })
 
   useEffect(() => {
-    // Verificar sesión y rol activo
     const activo = JSON.parse(localStorage.getItem('usuario_activo') || 'null')
     const rolGuardado = localStorage.getItem('rol_activo')
 
@@ -29,15 +26,13 @@ export default function SolicitudesMantenimientoPage() {
       setRolActual(rolGuardado)
     }
 
-    // Cargar solicitudes guardadas previamente si existen
     const solicitudesGuardadas = JSON.parse(localStorage.getItem('lista_solicitudes_cmms') || '[]')
     if (solicitudesGuardadas.length > 0) {
       setSolicitudes(solicitudesGuardadas)
     } else {
-      // Datos de ejemplo iniciales orientados a mantenimiento industrial
       const iniciales = [
-        { id: 1, equipo: 'Compresor de Tornillo #02', descripcion: 'Fuga de aceite en la línea de descarga y alta temperatura.', prioridad: 'Alta', planta: 'Planta 01', estado: 'Pendiente', fecha: '2026-08-28' },
-        { id: 2, equipo: 'Faja Transportadora L-04', descripcion: 'Desalineación de banda y ruido anómalo en polín de retorno.', prioridad: 'Media', planta: 'Planta 01', estado: 'En Proceso', fecha: '2026-08-27' }
+        { id: 1, equipo: 'Compresor de Tornillo #02', descripcion: 'Fuga de aceite en línea de descarga.', prioridad: 'Alta', planta: 'Planta 01', estado: 'Pendiente', fecha: '2026-08-28' },
+        { id: 2, equipo: 'Faja Transportadora L-04', descripcion: 'Desalineación de banda.', prioridad: 'Media', planta: 'Planta 01', estado: 'En Proceso', fecha: '2026-08-27' }
       ]
       setSolicitudes(iniciales)
       localStorage.setItem('lista_solicitudes_cmms', JSON.stringify(iniciales))
@@ -58,10 +53,8 @@ export default function SolicitudesMantenimientoPage() {
     const actualizadas = [item, ...solicitudes]
     setSolicitudes(actualizadas)
     localStorage.setItem('lista_solicitudes_cmms', JSON.stringify(actualizadas))
-
-    // Limpiar formulario
     setNuevaSolicitud({ equipo: '', descripcion: '', prioridad: 'Media', planta: 'Planta 01' })
-    alert('Solicitud de mantenimiento registrada exitosamente.')
+    alert('Solicitud registrada con éxito.')
   }
 
   const cambiarEstado = (id: number, nuevoEstado: string) => {
@@ -79,11 +72,9 @@ export default function SolicitudesMantenimientoPage() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 p-6">
       <div className="max-w-6xl mx-auto space-y-6">
-        
-        {/* Cabecera */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-slate-900 border border-slate-800 p-6 rounded-2xl gap-4 shadow-xl">
           <div>
-            <h1 className="text-xl font-bold text-white">MK CONSULTING - Gestión de Mantenimiento</h1>
+            <h1 className="text-xl font-bold text-white">MK CONSULTING - CMMS</h1>
             <p className="text-xs text-slate-400 mt-1">
               Usuario: <span className="text-amber-400 font-semibold">{usuarioActivo?.correo || 'Invitado'}</span> | Rol: <span className="uppercase text-amber-400 font-bold">{rolActual}</span>
             </p>
@@ -91,22 +82,21 @@ export default function SolicitudesMantenimientoPage() {
           <div className="flex items-center gap-3">
             <button 
               onClick={() => router.push('/dashboard/usuarios')} 
-              className="bg-slate-800 hover:bg-slate-700 text-xs px-4 py-2 rounded-xl border border-slate-700 transition"
+              className="bg-slate-800 hover:bg-slate-700 text-xs px-4 py-2 rounded-xl border border-slate-700 transition cursor-pointer"
             >
               👥 Gestionar Usuarios
             </button>
             <button 
               onClick={cerrarSesion} 
-              className="bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs px-4 py-2 rounded-xl border border-red-500/30 transition"
+              className="bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs px-4 py-2 rounded-xl border border-red-500/30 transition cursor-pointer"
             >
               Cerrar Sesión
             </button>
           </div>
         </div>
 
-        {/* Formulario para registrar nueva solicitud */}
         <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl space-y-4">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-amber-400">Registrar Nueva Solicitud de Trabajo</h2>
+          <h2 className="text-sm font-bold uppercase tracking-wider text-amber-400">Registrar Nueva Solicitud</h2>
           <form onSubmit={handleCrearSolicitud} className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1">Equipo / Activo:</label>
@@ -114,19 +104,19 @@ export default function SolicitudesMantenimientoPage() {
                 type="text" 
                 value={nuevaSolicitud.equipo}
                 onChange={e => setNuevaSolicitud({...nuevaSolicitud, equipo: e.target.value})}
-                placeholder="Ej. Bomba Centrífuga P-01" 
-                className="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-xs text-white outline-none focus:border-amber-500"
+                placeholder="Ej. Bomba P-01" 
+                className="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-xs text-white outline-none"
                 required
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Descripción de la Falla / Trabajo:</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">Descripción de la Falla:</label>
               <input 
                 type="text" 
                 value={nuevaSolicitud.descripcion}
                 onChange={e => setNuevaSolicitud({...nuevaSolicitud, descripcion: e.target.value})}
                 placeholder="Detalle el problema..." 
-                className="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-xs text-white outline-none focus:border-amber-500"
+                className="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-xs text-white outline-none"
                 required
               />
             </div>
@@ -146,7 +136,7 @@ export default function SolicitudesMantenimientoPage() {
             <div className="flex items-end">
               <button 
                 type="submit"
-                className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold p-3 rounded-xl text-xs transition cursor-pointer shadow-lg"
+                className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold p-3 rounded-xl text-xs transition cursor-pointer"
               >
                 + Crear Solicitud
               </button>
@@ -154,10 +144,8 @@ export default function SolicitudesMantenimientoPage() {
           </form>
         </div>
 
-        {/* Listado de Solicitudes */}
         <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl space-y-4">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-300">Órdenes y Solicitudes Registradas</h2>
-          
+          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-300">Órdenes Registradas</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
@@ -171,56 +159,41 @@ export default function SolicitudesMantenimientoPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
-                {solicitudes.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="text-center p-6 text-slate-500">No hay solicitudes registradas.</td>
+                {solicitudes.map((s) => (
+                  <tr key={s.id} className="hover:bg-slate-800/40 transition">
+                    <td className="p-3 text-slate-400">{s.fecha}</td>
+                    <td className="p-3 font-semibold text-white">{s.equipo}</td>
+                    <td className="p-3 text-slate-300">{s.descripcion}</td>
+                    <td className="p-3">
+                      <span className="px-2 py-1 rounded-lg text-[10px] font-bold bg-amber-500/20 text-amber-400">
+                        {s.prioridad}
+                      </span>
+                    </td>
+                    <td className="p-3">
+                      <span className="px-2 py-1 rounded-lg text-[10px] font-bold bg-blue-500/20 text-blue-400">
+                        {s.estado}
+                      </span>
+                    </td>
+                    <td className="p-3 text-center space-x-2">
+                      <button 
+                        onClick={() => cambiarEstado(s.id, 'En Proceso')}
+                        className="bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white px-2 py-1 rounded text-[10px] transition cursor-pointer"
+                      >
+                        En Proceso
+                      </button>
+                      <button 
+                        onClick={() => cambiarEstado(s.id, 'Completado')}
+                        className="bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white px-2 py-1 rounded text-[10px] transition cursor-pointer"
+                      >
+                        Completar
+                      </button>
+                    </td>
                   </tr>
-                ) : (
-                  solicitudes.map((s) => (
-                    <tr key={s.id} className="hover:bg-slate-800/40 transition">
-                      <td className="p-3 text-slate-400">{s.fecha}</td>
-                      <td className="p-3 font-semibold text-white">{s.equipo}</td>
-                      <td className="p-3 text-slate-300">{s.descripcion}</td>
-                      <td className="p-3">
-                        <span className={`px-2 py-1 rounded-lg text-[10px] font-bold ${
-                          s.prioridad === 'Crítica' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
-                          s.prioridad === 'Alta' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
-                          'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                        }`}>
-                          {s.prioridad}
-                        </span>
-                      </td>
-                      <td className="p-3">
-                        <span className={`px-2 py-1 rounded-lg text-[10px] font-bold ${
-                          s.estado === 'Pendiente' ? 'bg-yellow-500/20 text-yellow-400' :
-                          s.estado === 'En Proceso' ? 'bg-blue-500/20 text-blue-400' :
-                          'bg-emerald-500/20 text-emerald-400'
-                        }`}>
-                          {s.estado}
-                        </span>
-                      </td>
-                      <td className="p-3 text-center space-x-2">
-                        <button 
-                          onClick={() => cambiarEstado(s.id, 'En Proceso')}
-                          className="bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white px-2 py-1 rounded text-[10px] transition"
-                        >
-                          En Proceso
-                        </button>
-                        <button 
-                          onClick={() => cambiarEstado(s.id, 'Completado')}
-                          className="bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white px-2 py-1 rounded text-[10px] transition"
-                        >
-                          Completar
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
+                ))}
               </tbody>
             </table>
           </div>
         </div>
-
       </div>
     </div>
   )
