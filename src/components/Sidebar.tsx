@@ -2,27 +2,24 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { LayoutDashboard, ClipboardList, Wrench, Boxes, Cpu, BarChart3, Settings, LogOut } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+import { LayoutDashboard, ClipboardList, Wrench, Boxes, BarChart3, Settings, LogOut } from 'lucide-react'
 
 export default function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
-  const supabase = createClient()
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
+  const handleLogout = () => {
+    localStorage.removeItem('usuario_activo')
+    localStorage.removeItem('rol_activo')
     router.push('/login')
-    router.refresh()
   }
 
   const menuItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Solicitudes', href: '/dashboard/requests', icon: ClipboardList },
-    { name: 'Órdenes de Trabajo', href: '/dashboard/work-orders', icon: Wrench },
-    { name: 'Activos / Equipos', href: '/dashboard/equipment', icon: Boxes },
-    { name: 'IoT & Sensores', href: '/dashboard/iot', icon: Cpu },
-    { name: 'Reportes & KPIs', href: '/dashboard/reports', icon: BarChart3 },
+    { name: 'Solicitudes', href: '/dashboard/solicitudes', icon: ClipboardList },
+    { name: 'Órdenes de Trabajo', href: '/dashboard/ot', icon: Wrench },
+    { name: 'Activos / Equipos', href: '/dashboard/activos', icon: Boxes },
+    { name: 'Reportes & KPIs', href: '/dashboard/reportes', icon: BarChart3 },
     { name: 'Administración', href: '/dashboard/admin', icon: Settings },
   ]
 
@@ -30,7 +27,7 @@ export default function Sidebar() {
     <aside className="flex flex-col w-64 bg-slate-900 border-r border-slate-800 min-h-screen">
       <div className="p-6 border-b border-slate-800">
         <h1 className="font-bold text-white text-lg tracking-wide">MANTENIMIENTO <span className="text-blue-500">PRO</span></h1>
-        <p className="text-xs text-slate-400 mt-0.5">Industrial IoT & Core</p>
+        <p className="text-xs text-slate-400 mt-0.5">Industrial CMMS</p>
       </div>
 
       <nav className="flex-1 px-4 py-6 space-y-1.5">
@@ -55,7 +52,7 @@ export default function Sidebar() {
       <div className="p-4 border-t border-slate-800">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 transition"
+          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 transition cursor-pointer"
         >
           <LogOut className="w-5 h-5" />
           Cerrar Sesión
