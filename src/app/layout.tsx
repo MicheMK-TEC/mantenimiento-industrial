@@ -1,4 +1,5 @@
- import type { Metadata } from 'next'
+import type { Metadata } from 'next'
+import { AuthProvider } from '@/contexts/AuthContext'
 
 export const metadata: Metadata = {
   title: 'MK Consulting - CMMS Industrial',
@@ -16,28 +17,9 @@ export default function RootLayout({
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
       </head>
       <body className="bg-slate-900 text-slate-100 font-sans antialiased min-h-screen flex flex-col">
-        <header className="bg-slate-950 border-b border-slate-800 px-6 py-3 flex justify-between items-center shadow-lg">
-          <div className="flex items-center space-x-3">
-            <div className="bg-blue-600 text-white font-black px-3 py-1.5 rounded tracking-wider text-sm shadow">
-              MK CONSULTING
-            </div>
-            <span className="text-xs uppercase tracking-widest text-slate-400 font-semibold">CMMS & Reliability Core</span>
-          </div>
-          <div className="flex items-center space-x-4 text-sm text-slate-300">
-            <span className="flex items-center"><span className="w-2.5 h-2.5 bg-emerald-500 rounded-full mr-2 animate-pulse"></span> Planta Activa (Admin Mode)</span>
-          </div>
-        </header>
-
-        {/* Menú de Navegación del CMMS */}
-        <nav className="bg-slate-900 border-b border-slate-800 px-6 py-2 flex space-x-6 text-sm overflow-x-auto shadow">
-          <a href="/dashboard" className="text-slate-300 hover:text-blue-400 font-medium transition">📊 Dashboard</a>
-          <a href="/dashboard/solicitudes" className="text-blue-400 font-bold transition">📋 Solicitudes de Mantenimiento</a>
-          <a href="/dashboard/admin" className="text-amber-400 font-medium transition">🔒 Administrador (Permisos y Accesos)</a>
-        </nav>
-
-        <main className="flex-1 p-6">
+        <AuthProvider>
           {children}
-        </main>
+        </AuthProvider>
       </body>
     </html>
   )
