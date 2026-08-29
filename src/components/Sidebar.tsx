@@ -3,31 +3,44 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { LayoutDashboard, ClipboardList, Wrench, Boxes, BarChart3, Settings, LogOut } from 'lucide-react'
+import { useAuth } from '@/contexts/AuthContext'
+
+type Rol = 'ADMINISTRADOR' | 'SUPERVISOR' | 'SOLICITANTE' | 'TECNICO' | 'GERENCIA'
+
+const TODOS_LOS_ITEMS = [
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['ADMINISTRADOR', 'SUPERVISOR', 'SOLICITANTE', 'TECNICO', 'GERENCIA'] as Rol[] },
+  { name: 'Solicitudes', href: '/dashboard/solicitudes', icon: ClipboardList, roles: ['ADMINISTRADOR', 'SUPERVISOR', 'SOLICITANTE', 'GERENCIA'] as Rol[] },
+  { name: 'Órdenes de Trabajo', href: '/dashboard/ot', icon: Wrench, roles: ['ADMINISTRADOR', 'SUPERVISOR', 'TECNICO', 'GERENCIA'] as Rol[] },
+  { name: 'Activos / Equipos', href: '/dashboard/activos', icon: Boxes, roles: ['ADMINISTRADOR', 'SUPERVISOR', 'GERENCIA'] as Rol[] },
+  { name: 'Reportes & KPIs', href: '/dashboard/reportes', icon: BarChart3, roles: ['ADMINISTRADOR', 'SUPERVISOR', 'GERENCIA'] as Rol[] },
+  { name: 'Administración', href: '/dashboard/admin', icon: Settings, roles: ['ADMINISTRADOR'] as Rol[] },
+]
 
 export default function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
+  const { profile, signOut } = useAuth()
 
-  const handleLogout = () => {
-    localStorage.removeItem('usuario_activo')
-    localStorage.removeItem('rol_activo')
+  const handleLogout = async () => {
+    await signOut()
     router.push('/login')
   }
 
-  const menuItems = [
-    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Solicitudes', href: '/dashboard/solicitudes', icon: ClipboardList },
-    { name: 'Órdenes de Trabajo', href: '/dashboard/ot', icon: Wrench },
-    { name: 'Activos / Equipos', href: '/dashboard/activos', icon: Boxes },
-    { name: 'Reportes & KPIs', href: '/dashboard/reportes', icon: BarChart3 },
-    { name: 'Administración', href: '/dashboard/admin', icon: Settings },
-  ]
+  const menuItems = TODOS_LOS_ITEMS.filter((item) =>
+    profile ? item.roles.includes(profile.role) : false
+  )
 
   return (
     <aside className="flex flex-col w-64 bg-slate-900 border-r border-slate-800 min-h-screen">
       <div className="p-6 border-b border-slate-800">
         <h1 className="font-bold text-white text-lg tracking-wide">MANTENIMIENTO <span className="text-blue-500">PRO</span></h1>
         <p className="text-xs text-slate-400 mt-0.5">Industrial CMMS</p>
+        {profile && (
+          <div className="mt-3 text-xs text-slate-300">
+            <p className="font-semibold truncate">{profile.full_name}</p>
+            <p className="text-slate-500 uppercase tracking-wide">{profile.role}</p>
+          </div>
+        )}
       </div>
 
       <nav className="flex-1 px-4 py-6 space-y-1.5">
